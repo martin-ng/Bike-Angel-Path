@@ -9,6 +9,10 @@ import AppNavigator from './navigation/AppNavigator';
 
 export default function App(props) {
   const [isLoadingComplete, setLoadingComplete] = useState(false);
+  const [latitude, setLatitude] = useState(null)
+  const [longitude, setLongitude] = useState(null)
+
+    // setLatitude(coordinates)
 
   if (!isLoadingComplete && !props.skipLoadingScreen) {
     return (
