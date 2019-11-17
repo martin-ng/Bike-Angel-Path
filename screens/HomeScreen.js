@@ -60,8 +60,19 @@ export default class HomeScreen extends Component {
     // const [ testLatitude, testLongitude ] = this.state.dataSource.features[0].geometry.coordinates
 
     if (!this.state.loading) {
-      console.log(this.state);
-      console.log(this.state.dataSource[0].geometry.coordinates);
+    
+      const { dataSource } = this.state
+
+      let markers = dataSource.map((dock) => (
+        <MapView.Marker
+        key={dock.geometry.coordinates}
+        coordinate={{ longitude: dock.geometry.coordinates[0], latitude: dock.geometry.coordinates[1] }}
+        title={"title"}
+        description={"description"}
+      />
+      ))
+
+      // console.log(dataSource[0].geometry.coordinates[0])
       return (
         <MapView
           // showsUserLocation
@@ -73,8 +84,19 @@ export default class HomeScreen extends Component {
             longitudeDelta: 0.0421
           }}
         >
+
+          {markers}
+        
+          {/* { this.state.dataSource.map((dock) => {
+            return (<MapView.Marker key={dock.geometry.coordinates[0]}
+            coordinate={{ longitude: dock.geometry.coordinates[1], latitude: dock.geometry.coordinates[0] }}
+            title={"title"}
+            description={"description"}
+          />)
+          })} */}
+          
           <MapView.Marker
-            coordinate={{ longitude: 40.691897, latitude: -73.975474 }}
+            coordinate={{ longitude: -73.975474 , latitude: 40.691897 }}
             title={"title"}
             description={"description"}
           />
