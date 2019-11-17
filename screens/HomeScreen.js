@@ -1,5 +1,5 @@
-import * as WebBrowser from 'expo-web-browser';
-import React, { Component } from 'react'
+import * as WebBrowser from "expo-web-browser";
+import React, { Component } from "react";
 
 import {
   Image,
@@ -8,96 +8,95 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
-  View,
-} from 'react-native';
+  View
+} from "react-native";
 
-import MapView from 'react-native-maps';
+import MapView from "react-native-maps";
 
-import * as Permissions from 'expo-permissions'
+import * as Permissions from "expo-permissions";
 
-import { MonoText } from '../components/StyledText';
-
+import { MonoText } from "../components/StyledText";
 
 export default class HomeScreen extends Component {
-  state = {
-    latitude: null,
-    longitude: null
+  constructor(props) {
+    super(props);
+    this.state = {
+      loading: true,
+      dataSource: [],
+      latitude: null,
+      longitude: null
+    };
   }
 
   async componentDidMount() {
-    const { status } = await Permissions.getAsync(Permissions.LOCATION)
+    const { status } = await Permissions.getAsync(Permissions.LOCATION);
 
-    if (status !== 'granted') {
-      const response = await Permissions.askAsync(Permissions.LOCATION)
+    if (status !== "granted") {
+      const response = await Permissions.askAsync(Permissions.LOCATION);
     }
     navigator.geolocation.getCurrentPosition(
-      ({ coords: { latitude, longitude} }) =>  this.setState({ latitude, longitude }),
-      (error) => console.log('Error: ', error)
-    )
+      ({ coords: { latitude, longitude } }) =>
+        this.setState({ latitude, longitude }, () =>
+          console.log("State:", this.state)
+        ),
+      error => console.log("Error: ", error)
+    );
+
+    fetch("https://layer.bicyclesharing.net/map/v1/nyc/stations")
+      .then(response => response.json())
+      .then(responseJson => {
+        this.setState({
+          loading: false,
+          dataSource: responseJson.features
+        });
+      })
+      .catch(error => console.log(error)); //to catch the errors if any
   }
 
   render() {
+    // console.log(this.state.dataSource)
+    const { latitude, longitude } = this.state;
+    // const { } = this.state.dataSource
+    // const [ testLatitude, testLongitude ] = this.state.dataSource.features[0].geometry.coordinates
+
+    if (!this.state.loading) {
+      console.log(this.state);
+      console.log(this.state.dataSource[0].geometry.coordinates);
+      return (
+        <MapView
+          // showsUserLocation
+          style={{ flex: 1 }}
+          initialRegion={{
+            latitude: 40.691897,
+            longitude: -73.975474,
+            latitudeDelta: 0.0922,
+            longitudeDelta: 0.0421
+          }}
+        >
+          <MapView.Marker
+            coordinate={{ longitude: 40.691897, latitude: -73.975474 }}
+            title={"title"}
+            description={"description"}
+          />
+
+          {/* { this.state.dataSource.map(dock => {
+            // console.log(dock.geometry.coordinates[0])
+            <MapView.Marker
+              coordinate={{ longitude: dock.geometry.coordinates[0], latitude: dock.geometry.coordinates[1] }}
+              title={"title"}
+              description={"description"}
+              />
+
+          })
+          } */}
+        </MapView>
+      );
+    }
+
     return (
-      // <View style={styles.container}>
-        // <MapView style={{ flex: 1}} initialRegion={{ latitude, longitude, latitudeDelta: 0.0922, longitudeDelta: 0.0421}}></MapView>
-
-
-        <MapView style={styles.map}
-          initialRegion={{latitude: 37.78825, longitude: -122.4324, latitudeDelta: 0.0922, longitudeDelta: 0.0421}}></MapView>
-        // <View style={styles.container}>
-        //   <Text>testing</Text>
-        // </View>
-
-        //   <ScrollView
-        //   style={styles.container}
-        //   contentContainerStyle={styles.contentContainer}>
-        //   <View style={styles.welcomeContainer}>
-        //     <Image
-        //       source={
-        //         __DEV__
-        //           ? require('../assets/images/robot-dev.png')
-        //           : require('../assets/images/robot-prod.png')
-        //       }
-        //       style={styles.welcomeImage}
-        //     />
-        //   </View>
-  
-        //   <View style={styles.getStartedContainer}>
-        //     <DevelopmentModeNotice />
-  
-        //     <Text style={styles.getStartedText}>Get started by opening</Text>
-  
-        //     <View
-        //       style={[styles.codeHighlightContainer, styles.homeScreenFilename]}>
-        //       <MonoText>screens/HomeScreen.js</MonoText>
-        //     </View>
-  
-        //     <Text style={styles.getStartedText}>
-        //       Change this text and your app will automatically reload.
-        //     </Text>
-        //   </View>
-  
-        //   <View style={styles.helpContainer}>
-        //     <TouchableOpacity onPress={handleHelpPress} style={styles.helpLink}>
-        //       <Text style={styles.helpLinkText}>
-        //         Help, it didn’t automatically reload!
-        //       </Text>
-        //     </TouchableOpacity>
-        //   </View>
-        // </ScrollView>
-  
-        // <View style={styles.tabBarInfoContainer}>
-        //   <Text style={styles.tabBarInfoText}>
-        //     This is a tab bar. You can edit it in:
-        //   </Text>
-  
-        //   <View
-        //     style={[styles.codeHighlightContainer, styles.navigationFilename]}>
-        //     <MonoText style={styles.codeHighlightText}>
-        //       navigation/MainTabNavigator.js
-        //     </MonoText>
-        //  </View>
-        //   </View>
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <Text>We need your permission!</Text>
+      </View>
     );
   }
 }
@@ -105,7 +104,7 @@ export default class HomeScreen extends Component {
 // export default function HomeScreen() {
 //   return (
 //     <View style={styles.container}>
-      /* <ScrollView
+/* <ScrollView
         style={styles.container}
         contentContainerStyle={styles.contentContainer}>
         <View style={styles.welcomeContainer}>
@@ -205,95 +204,95 @@ export default class HomeScreen extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff"
   },
   developmentModeText: {
     marginBottom: 20,
-    color: 'rgba(0,0,0,0.4)',
+    color: "rgba(0,0,0,0.4)",
     fontSize: 14,
     lineHeight: 19,
-    textAlign: 'center',
+    textAlign: "center"
   },
   contentContainer: {
-    paddingTop: 30,
+    paddingTop: 30
   },
   welcomeContainer: {
-    alignItems: 'center',
+    alignItems: "center",
     marginTop: 10,
-    marginBottom: 20,
+    marginBottom: 20
   },
   welcomeImage: {
     width: 100,
     height: 80,
-    resizeMode: 'contain',
+    resizeMode: "contain",
     marginTop: 3,
-    marginLeft: -10,
+    marginLeft: -10
   },
   getStartedContainer: {
-    alignItems: 'center',
-    marginHorizontal: 50,
+    alignItems: "center",
+    marginHorizontal: 50
   },
   homeScreenFilename: {
-    marginVertical: 7,
+    marginVertical: 7
   },
   codeHighlightText: {
-    color: 'rgba(96,100,109, 0.8)',
+    color: "rgba(96,100,109, 0.8)"
   },
   codeHighlightContainer: {
-    backgroundColor: 'rgba(0,0,0,0.05)',
+    backgroundColor: "rgba(0,0,0,0.05)",
     borderRadius: 3,
-    paddingHorizontal: 4,
+    paddingHorizontal: 4
   },
   getStartedText: {
     fontSize: 17,
-    color: 'rgba(96,100,109, 1)',
+    color: "rgba(96,100,109, 1)",
     lineHeight: 24,
-    textAlign: 'center',
+    textAlign: "center"
   },
   tabBarInfoContainer: {
-    position: 'absolute',
+    position: "absolute",
     bottom: 0,
     left: 0,
     right: 0,
     ...Platform.select({
       ios: {
-        shadowColor: 'black',
+        shadowColor: "black",
         shadowOffset: { width: 0, height: -3 },
         shadowOpacity: 0.1,
-        shadowRadius: 3,
+        shadowRadius: 3
       },
       android: {
-        elevation: 20,
-      },
+        elevation: 20
+      }
     }),
-    alignItems: 'center',
-    backgroundColor: '#fbfbfb',
-    paddingVertical: 20,
+    alignItems: "center",
+    backgroundColor: "#fbfbfb",
+    paddingVertical: 20
   },
   tabBarInfoText: {
     fontSize: 17,
-    color: 'rgba(96,100,109, 1)',
-    textAlign: 'center',
+    color: "rgba(96,100,109, 1)",
+    textAlign: "center"
   },
   navigationFilename: {
-    marginTop: 5,
+    marginTop: 5
   },
   helpContainer: {
     marginTop: 15,
-    alignItems: 'center',
+    alignItems: "center"
   },
   helpLink: {
-    paddingVertical: 15,
+    paddingVertical: 15
   },
   helpLinkText: {
     fontSize: 14,
-    color: '#2e78b7',
+    color: "#2e78b7"
   },
   example: {
     fontSize: 20,
     marginTop: 25
   },
   map: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFillObject
   }
 });
