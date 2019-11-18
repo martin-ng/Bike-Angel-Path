@@ -23,6 +23,7 @@ export default class HomeScreen extends Component {
     this.state = {
       loading: true,
       dataSource: [],
+      // currentOption: allDocks,
       latitude: null,
       longitude: null
     };
@@ -54,26 +55,53 @@ export default class HomeScreen extends Component {
   }
 
   render() {
-    // console.log(this.state.dataSource)
     const { latitude, longitude } = this.state;
-    // const { } = this.state.dataSource
-    // const [ testLatitude, testLongitude ] = this.state.dataSource.features[0].geometry.coordinates
 
     if (!this.state.loading) {
-    
-      const { dataSource } = this.state
+      const { dataSource } = this.state;
 
-      let markers = dataSource.map((dock) => (
+      let allDocks = dataSource.map(dock => (
         <MapView.Marker
-        key={dock.geometry.coordinates}
-        coordinate={{ longitude: dock.geometry.coordinates[0], latitude: dock.geometry.coordinates[1] }}
-        title={"title"}
-        description={"description"}
-      />
-      ))
+          key={dock.geometry.coordinates}
+          coordinate={{
+            longitude: dock.geometry.coordinates[0],
+            latitude: dock.geometry.coordinates[1]
+          }}
+          title={"title"}
+          description={"description"}
+        />
+      ));
 
-      // console.log(dataSource[0].geometry.coordinates[0])
+      let takeDocks = dataSource
+        .filter(dock => dock.properties.bike_angels_action === "take")
+        .map(dock => (
+          <MapView.Marker
+            key={dock.geometry.coordinates}
+            coordinate={{
+              longitude: dock.geometry.coordinates[0],
+              latitude: dock.geometry.coordinates[1]
+            }}
+            title={"title"}
+            description={"description"}
+          />
+        ));
+
+      let giveDocks = dataSource
+        .filter(dock => dock.properties.bike_angels_action === "give")
+        .map(dock => (
+          <MapView.Marker
+            key={dock.geometry.coordinates}
+            coordinate={{
+              longitude: dock.geometry.coordinates[0],
+              latitude: dock.geometry.coordinates[1]
+            }}
+            title={"title"}
+            description={"description"}
+          />
+        ));
+
       return (
+        // <Button>test</Button>
         <MapView
           // showsUserLocation
           style={{ flex: 1 }}
@@ -84,33 +112,19 @@ export default class HomeScreen extends Component {
             longitudeDelta: 0.0421
           }}
         >
+          {allDocks}
+          {/* {giveDocks} */}
+          {/* {takeDocks} */}
 
-          {markers}
-        
-          {/* { this.state.dataSource.map((dock) => {
-            return (<MapView.Marker key={dock.geometry.coordinates[0]}
-            coordinate={{ longitude: dock.geometry.coordinates[1], latitude: dock.geometry.coordinates[0] }}
-            title={"title"}
-            description={"description"}
-          />)
-          })} */}
-          
+          {/* <View>
+        <ToggleButton icon="bluetooth" value="bluetooth" status={this.state.status} onPress={value => this.setState({ status: value === 'checked' ? 'unchecked' : 'checked',})} />
+        </View> */}
+
           <MapView.Marker
-            coordinate={{ longitude: -73.975474 , latitude: 40.691897 }}
+            coordinate={{ longitude: -73.975474, latitude: 40.691897 }}
             title={"title"}
             description={"description"}
           />
-
-          {/* { this.state.dataSource.map(dock => {
-            // console.log(dock.geometry.coordinates[0])
-            <MapView.Marker
-              coordinate={{ longitude: dock.geometry.coordinates[0], latitude: dock.geometry.coordinates[1] }}
-              title={"title"}
-              description={"description"}
-              />
-
-          })
-          } */}
         </MapView>
       );
     }
@@ -316,5 +330,18 @@ const styles = StyleSheet.create({
   },
   map: {
     ...StyleSheet.absoluteFillObject
+  },
+  circle: {
+    width: 30,
+    height: 30,
+    borderRadius: 30 / 2,
+    backgroundColor: "blue"
+  },
+  pinText: {
+    color: "white",
+    fontWeight: "bold",
+    textAlign: "center",
+    fontSize: 20,
+    marginBottom: 10
   }
 });
