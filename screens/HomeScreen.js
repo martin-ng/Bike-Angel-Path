@@ -11,7 +11,7 @@ import {
   View
 } from "react-native";
 
-import MapView from "react-native-maps";
+import MapView, { Marker } from "react-native-maps";
 
 import * as Permissions from "expo-permissions";
 
@@ -60,44 +60,77 @@ export default class HomeScreen extends Component {
     if (!this.state.loading) {
       const { dataSource } = this.state;
 
-      let allDocks = dataSource.map(dock => (
-        <MapView.Marker
-          key={dock.geometry.coordinates}
-          coordinate={{
-            longitude: dock.geometry.coordinates[0],
-            latitude: dock.geometry.coordinates[1]
-          }}
-          title={"title"}
-          description={"description"}
-        />
-      ));
+      // let allDocks = dataSource.map(dock => (
+      //   <MapView.Marker
+      //     key={dock.geometry.coordinates}
+      //     coordinate={{
+      //       longitude: dock.geometry.coordinates[0],
+      //       latitude: dock.geometry.coordinates[1]
+      //     }}
+      //     title={`${dock.properties.bike_angels_action}`}
+      //     description={`${dock.properties.bike_angels_points} Pts`}
+      //     pinColor={"blue"}
+      //   />
+      // ));
 
-      let takeDocks = dataSource
-        .filter(dock => dock.properties.bike_angels_action === "take")
+      let neutralDocks = dataSource
+        .filter(dock => dock.properties.bike_angels_action === "neutral")
         .map(dock => (
-          <MapView.Marker
+          <Marker
             key={dock.geometry.coordinates}
             coordinate={{
               longitude: dock.geometry.coordinates[0],
               latitude: dock.geometry.coordinates[1]
             }}
-            title={"title"}
-            description={"description"}
-          />
+            title={`${dock.properties.bike_angels_action}`}
+            description={`${dock.properties.bike_angels_points} Pts`}
+          >
+          <View style={styles.neutralMarker}>
+              <Text style={styles.text}>
+                {dock.properties.bike_angels_points}
+              </Text>
+            </View>
+          </Marker>
+        ));
+
+      let takeDocks = dataSource
+        .filter(dock => dock.properties.bike_angels_action === "take")
+        .map(dock => (
+          <Marker
+            key={dock.geometry.coordinates}
+            coordinate={{
+              longitude: dock.geometry.coordinates[0],
+              latitude: dock.geometry.coordinates[1]
+            }}
+            title={`${dock.properties.bike_angels_action}`}
+            description={`${dock.properties.bike_angels_points} Pts`}
+          >
+            <View style={styles.marker}>
+              <Text style={styles.text}>
+                {dock.properties.bike_angels_points}
+              </Text>
+            </View>
+          </Marker>
         ));
 
       let giveDocks = dataSource
         .filter(dock => dock.properties.bike_angels_action === "give")
         .map(dock => (
-          <MapView.Marker
+          <Marker
             key={dock.geometry.coordinates}
             coordinate={{
               longitude: dock.geometry.coordinates[0],
               latitude: dock.geometry.coordinates[1]
             }}
-            title={"title"}
-            description={"description"}
-          />
+            title={`${dock.properties.bike_angels_action}`}
+            description={`${dock.properties.bike_angels_points} Pts`}
+          >
+            <View style={styles.markerGive}>
+              <Text style={styles.text}>
+                {dock.properties.bike_angels_points}
+              </Text>
+            </View>
+          </Marker>
         ));
 
       return (
@@ -112,135 +145,45 @@ export default class HomeScreen extends Component {
             longitudeDelta: 0.0421
           }}
         >
-          {allDocks}
-          {/* {giveDocks} */}
-          {/* {takeDocks} */}
-
-          {/* <View>
-        <ToggleButton icon="bluetooth" value="bluetooth" status={this.state.status} onPress={value => this.setState({ status: value === 'checked' ? 'unchecked' : 'checked',})} />
-        </View> */}
-
-          <MapView.Marker
-            coordinate={{ longitude: -73.975474, latitude: 40.691897 }}
-            title={"title"}
-            description={"description"}
-          />
+          {/* {allDocks} */}
+          {neutralDocks}
+          {giveDocks}
+          {takeDocks}
         </MapView>
       );
     }
 
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <Text>We need your permission!</Text>
+        <Text>Loading Map!!!!</Text>
       </View>
     );
   }
 }
 
-// export default function HomeScreen() {
-//   return (
-//     <View style={styles.container}>
-/* <ScrollView
-        style={styles.container}
-        contentContainerStyle={styles.contentContainer}>
-        <View style={styles.welcomeContainer}>
-          <Image
-            source={
-              __DEV__
-                ? require('../assets/images/robot-dev.png')
-                : require('../assets/images/robot-prod.png')
-            }
-            style={styles.welcomeImage}
-          />
-        </View>
-
-        <View style={styles.getStartedContainer}>
-          <DevelopmentModeNotice />
-
-          <Text style={styles.getStartedText}>Get started by opening</Text>
-
-          <View
-            style={[styles.codeHighlightContainer, styles.homeScreenFilename]}>
-            <MonoText>screens/HomeScreen.js</MonoText>
-          </View>
-
-          <Text style={styles.getStartedText}>
-            Change this text and your app will automatically reload.
-          </Text>
-        </View>
-
-        <View style={styles.helpContainer}>
-          <TouchableOpacity onPress={handleHelpPress} style={styles.helpLink}>
-            <Text style={styles.helpLinkText}>
-              Help, it didn’t automatically reload!
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
-
-      <View style={styles.tabBarInfoContainer}>
-        <Text style={styles.tabBarInfoText}>
-          This is a tab bar. You can edit it in:
-        </Text>
-
-        <View
-          style={[styles.codeHighlightContainer, styles.navigationFilename]}>
-          <MonoText style={styles.codeHighlightText}>
-            navigation/MainTabNavigator.js
-          </MonoText>
-        </View>
-      </View> */
-//     <Text>
-//       HI JOON~!~!~!~
-
-//     </Text>
-//     </View>
-//   );
-// }
-
-// HomeScreen.navigationOptions = {
-//   header: null,
-// };
-
-// function DevelopmentModeNotice() {
-//   if (__DEV__) {
-//     const learnMoreButton = (
-//       <Text onPress={handleLearnMorePress} style={styles.helpLinkText}>
-//         Learn more
-//       </Text>
-//     );
-
-//     return (
-//       <Text style={styles.developmentModeText}>
-//         Development mode is enabled: your app will be slower but you can use
-//         useful development tools. {learnMoreButton}
-//       </Text>
-//     );
-//   } else {
-//     return (
-//       <Text style={styles.developmentModeText}>
-//         You are not in development mode: your app will run at full speed.
-//       </Text>
-//     );
-//   }
-// }
-
-// function handleLearnMorePress() {
-//   WebBrowser.openBrowserAsync(
-//     'https://docs.expo.io/versions/latest/workflow/development-mode/'
-//   );
-// }
-
-// function handleHelpPress() {
-//   WebBrowser.openBrowserAsync(
-//     'https://docs.expo.io/versions/latest/workflow/up-and-running/#cant-see-your-changes'
-//   );
-// }
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff"
+  },
+  marker: {
+    backgroundColor: "#33B5FF",
+    padding: 2,
+    borderRadius: 5
+  },
+  markerGive: {
+    backgroundColor: "#F17B0B",
+    padding: 2,
+    borderRadius: 5
+  },
+  neutralMarker: {
+    backgroundColor: "black",
+    padding: 2,
+    borderRadius: 5
+  },
+  text: {
+    color: "#FFF",
+    fontWeight: "bold"
   },
   developmentModeText: {
     marginBottom: 20,
