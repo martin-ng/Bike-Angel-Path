@@ -39,6 +39,8 @@ export default class App extends Component {
       dataSource: [],
       latitude: null,
       longitude: null
+      // testing: true,
+      // testingTwo: true
     };
   }
 
@@ -68,11 +70,21 @@ export default class App extends Component {
   }
 
   render() {
-    console.log(this.state.dataSource);
     if (this.state.loading) {
       return <Loading />;
     } else {
-      return <Index />;
+      return (
+        <Index
+          data={this.state.dataSource}
+          testing={this.state.testing}
+          testingTwo={this.state.testingTwo}
+        />
+      );
+      // return (
+      //   <Index
+      //     testing={this.state.testing}
+      //     testingTwo={this.state.testingTwo}
+      //   />
     }
   }
 }

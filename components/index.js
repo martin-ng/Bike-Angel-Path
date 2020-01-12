@@ -26,12 +26,19 @@ import {
 import { Container, Content, Header, Body, Icon } from "native-base";
 
 import AllDocks from "./AllDocks";
-import Example from "./Example";
+import GiveDocks from "./GiveDocks";
+import TakeDocks from "./TakeDocks";
 
 class Index extends Component {
+  constructor(props) {
+    super(props);
+  }
+
   render() {
+    // console.log("index: ", this.props.data);
+    console.log("index", this.props.data[0]);
     const AppNavigator = createAppContainer(AppDrawerNavigator);
-    return <AppNavigator />;
+    return <AppNavigator screenProps={this.props.data} />;
   }
 }
 
@@ -58,11 +65,12 @@ const CustomDrawerContentComponent = props => (
 
 const AppDrawerNavigator = createDrawerNavigator(
   {
-    "All Docks": AllDocks,
-    Example: Example
+    "All Docks": props => <AllDocks {...props} />,
+    "Take Docks": props => <TakeDocks {...props} />,
+    "Give Docks": props => <GiveDocks {...props} />
   },
   {
-    contentComponent: CustomDrawerContentComponent
+    contentComponent: props => <CustomDrawerContentComponent {...props} />
   }
 );
 
