@@ -1,66 +1,78 @@
-import { AppLoading } from 'expo';
-import { Asset } from 'expo-asset';
-import * as Font from 'expo-font';
-import React, { useState } from 'react';
-import { Platform, StatusBar, StyleSheet, View } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import React, { Component } from "react";
+import * as Permissions from "expo-permissions";
+import * as Location from "expo-location";
 
-import AppNavigator from './navigation/AppNavigator';
+import {
+  Text,
+  View,
+  StyleSheet,
+  SafeAreaView,
+  ScrollView,
+  Dimensions,
+  Image,
+  Button
+} from "react-native";
 
-export default function App(props) {
-  const [isLoadingComplete, setLoadingComplete] = useState(false);
-  const [latitude, setLatitude] = useState(null)
-  const [longitude, setLongitude] = useState(null)
+import {
+  DrawerItems,
+  createAppContainer,
+  front,
+  back,
+  slide
+} from "react-navigation";
 
-    // setLatitude(coordinates)
+import {
+  createDrawerNavigator,
+  DrawerNavigatorItems
+} from "react-navigation-drawer";
 
-  if (!isLoadingComplete && !props.skipLoadingScreen) {
-    return (
-      <AppLoading
-        startAsync={loadResourcesAsync}
-        onError={handleLoadingError}
-        onFinish={() => handleFinishLoading(setLoadingComplete)}
-      />
+import { Container, Content, Header, Body, Icon } from "native-base";
+
+import Index from "./components/Index";
+import Loading from "./components/Loading";
+
+export default class App extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      loading: true,
+      dataSource: [],
+      latitude: null,
+      longitude: null
+    };
+  }
+
+  async componentDidMount() {
+    const { status } = await Permissions.getAsync(Permissions.LOCATION);
+
+    if (status !== "granted") {
+      const response = await Permissions.askAsync(Permissions.LOCATION);
+    }
+    navigator.geolocation.getCurrentPosition(
+      ({ coords: { latitude, longitude } }) =>
+        this.setState({ latitude, longitude }, () =>
+          console.log("State:", this.state)
+        ),
+      error => console.log("Error: ", error)
     );
-  } else {
-    return (
-      <View style={styles.container}>
-        {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
-        <AppNavigator />
-      </View>
-    );
+
+    fetch("https://layer.bicyclesharing.net/map/v1/nyc/stations")
+      .then(response => response.json())
+      .then(responseJson => {
+        this.setState({
+          loading: false,
+          dataSource: responseJson.features
+        });
+      })
+      .catch(error => console.log(error)); //to catch the errors if any
+  }
+
+  render() {
+    console.log(this.state.dataSource);
+    if (this.state.loading) {
+      return <Loading />;
+    } else {
+      return <Index />;
+    }
   }
 }
-
-async function loadResourcesAsync() {
-  await Promise.all([
-    Asset.loadAsync([
-      require('./assets/images/robot-dev.png'),
-      require('./assets/images/robot-prod.png'),
-    ]),
-    Font.loadAsync({
-      // This is the font that we are using for our tab bar
-      ...Ionicons.font,
-      // We include SpaceMono because we use it in HomeScreen.js. Feel free to
-      // remove this if you are not using it in your app
-      'space-mono': require('./assets/fonts/SpaceMono-Regular.ttf'),
-    }),
-  ]);
-}
-
-function handleLoadingError(error) {
-  // In this case, you might want to report the error to your error reporting
-  // service, for example Sentry
-  console.warn(error);
-}
-
-function handleFinishLoading(setLoadingComplete) {
-  setLoadingComplete(true);
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
-});
