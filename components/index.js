@@ -25,8 +25,6 @@ import {
 
 import { Container, Content, Header, Body, Icon } from "native-base";
 
-import { connect } from "react-redux";
-
 import AllDocks from "./AllDocks";
 import GiveDocks from "./GiveDocks";
 import TakeDocks from "./TakeDocks";
