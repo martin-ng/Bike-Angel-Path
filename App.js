@@ -28,8 +28,8 @@ import {
 
 import { Container, Content, Header, Body, Icon } from "native-base";
 
-import Index from "./components/Index";
 import Loading from "./components/Loading";
+import Index from "./components/Index";
 
 export default class App extends Component {
   constructor(props) {
@@ -73,18 +73,7 @@ export default class App extends Component {
     if (this.state.loading) {
       return <Loading />;
     } else {
-      return (
-        <Index
-          data={this.state.dataSource}
-          testing={this.state.testing}
-          testingTwo={this.state.testingTwo}
-        />
-      );
-      // return (
-      //   <Index
-      //     testing={this.state.testing}
-      //     testingTwo={this.state.testingTwo}
-      //   />
+      return <Index data={this.state.dataSource} />;
     }
   }
 }
