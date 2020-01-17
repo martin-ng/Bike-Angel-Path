@@ -9,35 +9,89 @@ import * as firebase from "firebase";
 
 firebase.initializeApp(firebaseConfig);
 
-export default class AllDocks extends Component {
+export default class AllDocks extends React.Component {
   constructor(props) {
     super(props);
+    this.state = {
+      docks: [],
+      loading: true
+    };
+    this.findDock = this.findDock.bind(this);
   }
 
   componentDidMount() {
-    // firebase
-    //   .database()
-    //   .ref("docks")
-    //   .child("docks")
-    //   .once("value", snapshot => {
-    //     const data = snapshot.val();
-    // if (snapshot.val()) {
-    //   const initDocks = [];
-    //   Object.keys(data).forEach(dock => initDocks.push(data[docks]));
-    //   console.log("initdocks: ", initDocks);
-    // }
-    // console.log(data);
+    // let dbRef = firebase
+    // .database()
+    // .ref("docks")
+    // .once("value")
+    // .then(function(snapshot) {
+    //   let data = snapshot.val();
+    //   // this.setState({
+    //   //   docks: [...docks, data]
+    //   // });
+    //   let closestData = data[3232].closest;
+    //   // console.log("closest: ", closestData);
+    //   for (let dock in closestData) {
+    //     let item = closestData[dock];
+    //     this.setState({
+    //       docks: [...this.state.docks, item]
+    //     });
+    //     console.log("state: ", this.state.docks);
+    //     // console.log("each dock: ", closestData[dock]);
+    //   }
     // });
-    let dbRef = firebase
+  }
+
+  findDock = () => {
+    let dbFind = firebase
       .database()
       .ref("docks")
-      .once(241);
-    console.log("TESTING: ", dbRef);
-  }
+      .once("value")
+      .then(snapshot => {
+        let data = snapshot.val();
+        // let dataById = data[id]
+        let closestData = data[3232].closest;
+
+        for (let dock in closestData) {
+          let item = closestData[dock];
+          this.setState({
+            docks: [...this.state.docks, item]
+          });
+          console.log("current state: ", this.state.docks);
+        }
+        // this.setState({
+        //   docks: closestData
+        // });
+      });
+
+    console.log(this.state.docks);
+  };
+
+  // fetch("https://layer.bicyclesharing.net/map/v1/nyc/stations")
+  //     .then(response => response.json())
+  //     .then(responseJson => {
+  //       this.setState({
+  //         loading: false,
+  //         dataSource: responseJson.features
+  //       });
+  //     })
+  //     .catch(error => console.log(error)); //to catch the errors if any
+
+  // findDock() {
+  //   let dbFind = firebase
+  //     .database()
+  //     .ref("docks")
+  //     .once("value")
+  //     .then(function(snapshot) {
+  //       let data = snapshot.val();
+  //       // let dataById = data[id]
+  //       let closestData = data[3232].closest;
+  //       console.log(closestData);
+  //     });
+  // }
 
   render() {
     // console.log("testing all docks: ", this.props.screenProps[0]);
-    // console.log("testing all docks");
     let data = this.props.screenProps;
 
     let neutralDocks = data
@@ -49,6 +103,7 @@ export default class AllDocks extends Component {
             longitude: dock.geometry.coordinates[0],
             latitude: dock.geometry.coordinates[1]
           }}
+          onPress={this.findDock}
           title={`${dock.properties.bike_angels_action}`}
           description={`${dock.properties.bike_angels_points} Pts`}
         >
