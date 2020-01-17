@@ -3,10 +3,30 @@ import { View, Text, StyleSheet } from "react-native";
 import { Icon, Button, Container, Header, Content, Left } from "native-base";
 import MapView, { Marker } from "react-native-maps";
 import HeaderComponent from "./navigation/HeaderComponent";
+import * as Permissions from "expo-permissions";
 
 export default class AllDocks extends Component {
   constructor(props) {
     super(props);
+    this.state = {
+      latitude: null,
+      longitude: null
+    };
+  }
+
+  async componentDidMount() {
+    const { status } = await Permissions.getAsync(Permissions.LOCATION);
+
+    if (status !== "granted") {
+      const response = await Permissions.askAsync(Permissions.LOCATION);
+    }
+    navigator.geolocation.getCurrentPosition(
+      ({ coords: { latitude, longitude } }) =>
+        this.setState({ latitude, longitude }, () =>
+          console.log("State:", this.state)
+        ),
+      error => console.log("Error: ", error)
+    );
   }
 
   render() {
@@ -15,7 +35,7 @@ export default class AllDocks extends Component {
     let data = this.props.screenProps;
 
     let neutralDocks = data
-      .filter(dock => dock.properties.bike_angels_action === "neutral")
+      // .filter(dock => dock.properties.bike_angels_action === "neutral")
       .map(dock => (
         <Marker
           key={dock.geometry.coordinates}
@@ -24,7 +44,10 @@ export default class AllDocks extends Component {
             latitude: dock.geometry.coordinates[1]
           }}
           title={`${dock.properties.bike_angels_action}`}
+          // title={`latitude:${dock.geometry.coordinates[1]}, longitude:${dock.geometry.coordinates[0]}`}
           description={`${dock.properties.bike_angels_points} Pts`}
+          // description={`ID: ${dock.properties.station_id}, Name: ${dock.properties.name}`}
+          // description={``}
         >
           <View style={styles.neutralMarker}>
             <Text style={styles.text}>
@@ -34,45 +57,45 @@ export default class AllDocks extends Component {
         </Marker>
       ));
 
-    let takeDocks = data
-      .filter(dock => dock.properties.bike_angels_action === "take")
-      .map(dock => (
-        <Marker
-          key={dock.geometry.coordinates}
-          coordinate={{
-            longitude: dock.geometry.coordinates[0],
-            latitude: dock.geometry.coordinates[1]
-          }}
-          title={`${dock.properties.bike_angels_action}`}
-          description={`${dock.properties.bike_angels_points} Pts`}
-        >
-          <View style={styles.marker}>
-            <Text style={styles.text}>
-              {dock.properties.bike_angels_points}
-            </Text>
-          </View>
-        </Marker>
-      ));
+    // let takeDocks = data
+    //   .filter(dock => dock.properties.bike_angels_action === "take")
+    //   .map(dock => (
+    //     <Marker
+    //       key={dock.geometry.coordinates}
+    //       coordinate={{
+    //         longitude: dock.geometry.coordinates[0],
+    //         latitude: dock.geometry.coordinates[1]
+    //       }}
+    //       title={`${dock.properties.bike_angels_action}`}
+    //       description={`${dock.properties.bike_angels_points} Pts`}
+    //     >
+    //       <View style={styles.marker}>
+    //         <Text style={styles.text}>
+    //           {dock.properties.bike_angels_points}
+    //         </Text>
+    //       </View>
+    //     </Marker>
+    //   ));
 
-    let giveDocks = data
-      .filter(dock => dock.properties.bike_angels_action === "give")
-      .map(dock => (
-        <Marker
-          key={dock.geometry.coordinates}
-          coordinate={{
-            longitude: dock.geometry.coordinates[0],
-            latitude: dock.geometry.coordinates[1]
-          }}
-          title={`${dock.properties.bike_angels_action}`}
-          description={`${dock.properties.bike_angels_points} Pts`}
-        >
-          <View style={styles.markerGive}>
-            <Text style={styles.text}>
-              {dock.properties.bike_angels_points}
-            </Text>
-          </View>
-        </Marker>
-      ));
+    // let giveDocks = data
+    //   .filter(dock => dock.properties.bike_angels_action === "give")
+    //   .map(dock => (
+    //     <Marker
+    //       key={dock.geometry.coordinates}
+    //       coordinate={{
+    //         longitude: dock.geometry.coordinates[0],
+    //         latitude: dock.geometry.coordinates[1]
+    //       }}
+    //       title={`${dock.properties.bike_angels_action}`}
+    //       description={`${dock.properties.bike_angels_points} Pts`}
+    //     >
+    //       <View style={styles.markerGive}>
+    //         <Text style={styles.text}>
+    //           {dock.properties.bike_angels_points}
+    //         </Text>
+    //       </View>
+    //     </Marker>
+    //   ));
 
     return (
       <React.Fragment>
@@ -83,8 +106,8 @@ export default class AllDocks extends Component {
           initialRegion={{
             latitude: 40.691897,
             longitude: -73.975474,
-            latitudeDelta: 0.0922,
-            longitudeDelta: 0.0421
+            latitudeDelta: 0.0422,
+            longitudeDelta: 0.02521
           }}
         >
           {neutralDocks}

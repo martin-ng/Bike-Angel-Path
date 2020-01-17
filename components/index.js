@@ -35,7 +35,6 @@ class Index extends Component {
   }
 
   render() {
-    // console.log("index: ", this.props.data);
     console.log("index", this.props.data[0]);
     const AppNavigator = createAppContainer(AppDrawerNavigator);
     return <AppNavigator screenProps={this.props.data} />;
