@@ -7,13 +7,14 @@ import {
   ScrollView,
   Dimensions,
   Image,
-  Button
+  Button,
+  ActivityIndicator
 } from "react-native";
 
 const Loading = () => {
   return (
-    <View>
-      <Text>LOADING!!!</Text>
+    <View style={styles.container}>
+      <ActivityIndicator size="large" />
     </View>
   );
 };

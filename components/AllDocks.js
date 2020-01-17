@@ -3,14 +3,40 @@ import { View, Text, StyleSheet } from "react-native";
 import { Icon, Button, Container, Header, Content, Left } from "native-base";
 import MapView, { Marker } from "react-native-maps";
 import HeaderComponent from "./navigation/HeaderComponent";
+import { firebaseConfig } from "./firebase/config";
+import * as firebase from "firebase";
+// import Fire from "./components/Fire";
+
+firebase.initializeApp(firebaseConfig);
 
 export default class AllDocks extends Component {
   constructor(props) {
     super(props);
   }
 
+  componentDidMount() {
+    // firebase
+    //   .database()
+    //   .ref("docks")
+    //   .child("docks")
+    //   .once("value", snapshot => {
+    //     const data = snapshot.val();
+    // if (snapshot.val()) {
+    //   const initDocks = [];
+    //   Object.keys(data).forEach(dock => initDocks.push(data[docks]));
+    //   console.log("initdocks: ", initDocks);
+    // }
+    // console.log(data);
+    // });
+    let dbRef = firebase
+      .database()
+      .ref("docks")
+      .once(241);
+    console.log("TESTING: ", dbRef);
+  }
+
   render() {
-    console.log("testing all docks: ", this.props.screenProps[0]);
+    // console.log("testing all docks: ", this.props.screenProps[0]);
     // console.log("testing all docks");
     let data = this.props.screenProps;
 
