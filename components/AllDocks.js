@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, Alert } from "react-native";
 import { Icon, Button, Container, Header, Content, Left } from "native-base";
 import MapView, { Marker } from "react-native-maps";
 import HeaderComponent from "./navigation/HeaderComponent";
@@ -17,31 +17,11 @@ export default class AllDocks extends React.Component {
       loading: true
     };
     this.findDock = this.findDock.bind(this);
+    this.findBestDock = this.findBestDock.bind(this);
+    // this.button =  this.button.bind(this);
   }
 
-  componentDidMount() {
-    // let dbRef = firebase
-    // .database()
-    // .ref("docks")
-    // .once("value")
-    // .then(function(snapshot) {
-    //   let data = snapshot.val();
-    //   // this.setState({
-    //   //   docks: [...docks, data]
-    //   // });
-    //   let closestData = data[3232].closest;
-    //   // console.log("closest: ", closestData);
-    //   for (let dock in closestData) {
-    //     let item = closestData[dock];
-    //     this.setState({
-    //       docks: [...this.state.docks, item]
-    //     });
-    //     console.log("state: ", this.state.docks);
-    //     // console.log("each dock: ", closestData[dock]);
-    //   }
-    // });
-  }
-
+  // refactor to take a dock's id and search for it in the db
   findDock = () => {
     let dbFind = firebase
       .database()
@@ -49,7 +29,6 @@ export default class AllDocks extends React.Component {
       .once("value")
       .then(snapshot => {
         let data = snapshot.val();
-        // let dataById = data[id]
         let closestData = data[3232].closest;
 
         for (let dock in closestData) {
@@ -57,38 +36,30 @@ export default class AllDocks extends React.Component {
           this.setState({
             docks: [...this.state.docks, item]
           });
-          console.log("current state: ", this.state.docks);
         }
-        // this.setState({
-        //   docks: closestData
-        // });
       });
-
     console.log(this.state.docks);
+
+    this.findBestDock();
   };
 
-  // fetch("https://layer.bicyclesharing.net/map/v1/nyc/stations")
-  //     .then(response => response.json())
-  //     .then(responseJson => {
-  //       this.setState({
-  //         loading: false,
-  //         dataSource: responseJson.features
-  //       });
-  //     })
-  //     .catch(error => console.log(error)); //to catch the errors if any
+  findBestDock = () => {
+    let max = 0;
+    console.log("Checking best dock array: ", this.state.docks);
+  };
 
-  // findDock() {
-  //   let dbFind = firebase
-  //     .database()
-  //     .ref("docks")
-  //     .once("value")
-  //     .then(function(snapshot) {
-  //       let data = snapshot.val();
-  //       // let dataById = data[id]
-  //       let closestData = data[3232].closest;
-  //       console.log(closestData);
-  //     });
-  // }
+  button = points => {
+    Alert.alert(`This dock offers ${points} points`, `Select this dock?`, [
+      {
+        text: "NO",
+        onPress: () => console.warn("No Pressed"),
+        style: "cancel"
+      },
+      // { text: "YES", onPress: () => console.warn("YES Pressed") }
+      // { text: "YES", onPress: () => this.findBestDock() }
+      { text: "YES", onPress: this.findBestDock }
+    ]);
+  };
 
   render() {
     // console.log("testing all docks: ", this.props.screenProps[0]);
@@ -103,7 +74,9 @@ export default class AllDocks extends React.Component {
             longitude: dock.geometry.coordinates[0],
             latitude: dock.geometry.coordinates[1]
           }}
-          onPress={this.findDock}
+          onPress={() => {
+            this.button(dock.properties.bike_angels_points);
+          }}
           title={`${dock.properties.bike_angels_action}`}
           description={`${dock.properties.bike_angels_points} Pts`}
         >
