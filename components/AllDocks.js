@@ -1,11 +1,11 @@
 import React, { Component } from "react";
-import { View, Text, StyleSheet, Alert } from "react-native";
+import { View, Text, StyleSheet, Alert, ActivityIndicator } from "react-native";
 import { Icon, Button, Container, Header, Content, Left } from "native-base";
 import MapView, { Marker } from "react-native-maps";
 import HeaderComponent from "./navigation/HeaderComponent";
 import { firebaseConfig } from "./firebase/config";
 import * as firebase from "firebase";
-// import Fire from "./components/Fire";
+import Loading from "./Loading";
 
 firebase.initializeApp(firebaseConfig);
 
@@ -14,15 +14,19 @@ export default class AllDocks extends React.Component {
     super(props);
     this.state = {
       docks: [],
-      loading: true
+      loading: false
     };
     this.findDock = this.findDock.bind(this);
     this.findBestDock = this.findBestDock.bind(this);
-    // this.button =  this.button.bind(this);
+    this.button = this.button.bind(this);
   }
 
   // refactor to take a dock's id and search for it in the db
   findDock = () => {
+    this.setState({
+      loading: true
+    });
+
     let dbFind = firebase
       .database()
       .ref("docks")
@@ -37,15 +41,19 @@ export default class AllDocks extends React.Component {
             docks: [...this.state.docks, item]
           });
         }
+        this.setState({
+          loading: false
+        });
+        console.log("before best dock function: ", this.state.docks);
+        this.findBestDock();
       });
-    console.log(this.state.docks);
-
-    this.findBestDock();
   };
 
   findBestDock = () => {
-    let max = 0;
+    let maxPoints = 0;
     console.log("Checking best dock array: ", this.state.docks);
+
+    // implementing math formula here
   };
 
   button = points => {
@@ -57,7 +65,7 @@ export default class AllDocks extends React.Component {
       },
       // { text: "YES", onPress: () => console.warn("YES Pressed") }
       // { text: "YES", onPress: () => this.findBestDock() }
-      { text: "YES", onPress: this.findBestDock }
+      { text: "YES", onPress: this.findDock }
     ]);
   };
 
@@ -131,6 +139,11 @@ export default class AllDocks extends React.Component {
     return (
       <React.Fragment>
         <HeaderComponent />
+        {this.state.loading && (
+          <View>
+            <Loading />
+          </View>
+        )}
         <MapView
           // showsUserLocation
           style={{ flex: 1 }}
