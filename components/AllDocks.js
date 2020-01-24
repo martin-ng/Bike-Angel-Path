@@ -50,7 +50,25 @@ export default class AllDocks extends React.Component {
   };
 
   findBestDock = () => {
+    console.log("props data: ", this.props.screenProps);
+    console.log(
+      "station id: ",
+      this.props.screenProps[0].properties.station_id
+    );
     let maxPoints = 0;
+    let dock = this.state.docks[0];
+
+    this.state.docks.forEach(el => {
+      const distance = el.distance;
+      const points = 0;
+      let stationID = el.id.toString();
+
+      let findStation = this.props.screenProps.find(
+        el => el.properties.station_id === stationId
+      );
+      console.log("FOUND STATION: ", findStation);
+    });
+
     console.log("Checking best dock array: ", this.state.docks);
 
     // implementing math formula here
